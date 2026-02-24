@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Price Predictor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('/static/wallpaperflare.com_wallpaper.jpg') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+        
+        label {
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+        
+        input, select {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .time-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .flight-info {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .flight-info.show {
+            display: block;
+        }
+        
+        .flight-info p {
+            color: #667eea;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .btn-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        
+        .model-choice {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .radio-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        input[type="radio"] {
+            width: auto;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Flight Price Predictor</h1>
+        <p class="subtitle">Predict flight prices based on route and travel details</p>
+        
+        <form action="/predict" method="POST" id="predictionForm">
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label for="airline">Airline</label>
+                    <select name="airline" id="airline" required>
+                        <option value="">Select Airline</option>
+                        {% for airline in airlines %}
+                        <option value="{{ airline }}">{{ airline }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="source">Source City</label>
+                    <select name="source" id="source" required>
+                        <option value="">Select Source</option>
+                        {% for source in sources %}
+                        <option value="{{ source }}">{{ source }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="destination">Destination City</label>
+                    <select name="destination" id="destination" required>
+                        <option value="">Select Destination</option>
+                        {% for dest in destinations %}
+                        <option value="{{ dest }}">{{ dest }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="journey_day">Journey Day</label>
+                    <input type="number" name="journey_day" id="journey_day" min="1" max="31" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="journey_month">Journey Month</label>
+                    <select name="journey_month" id="journey_month" required>
+                        <option value="">Select Month</option>
+                        <option value="1">January</option>
+                        <option value="2">February</option>
+                        <option value="3">March</option>
+                        <option value="4">April</option>
+                        <option value="5">May</option>
+                        <option value="6">June</option>
+                        <option value="7">July</option>
+                        <option value="8">August</option>
+                        <option value="9">September</option>
+                        <option value="10">October</option>
+                        <option value="11">November</option>
+                        <option value="12">December</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Departure Time</label>
+                    <div class="time-group">
+                        <input type="number" name="departure_hour" id="departure_hour" placeholder="Hour" min="0" max="23" required>
+                        <input type="number" name="departure_min" id="departure_min" placeholder="Min" min="0" max="59" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Arrival Time</label>
+                    <div class="time-group">
+                        <input type="number" name="arrival_hour" id="arrival_hour" placeholder="Hour" min="0" max="23" required>
+                        <input type="number" name="arrival_min" id="arrival_min" placeholder="Min" min="0" max="59" required>
+                    </div>
+                </div>
+                
+                <div class="form-group full-width">
+                    <label for="total_stops">Number of Stops</label>
+                    <select name="total_stops" id="total_stops" required>
+                        <option value="0">Non-stop</option>
+                        <option value="1">1 Stop</option>
+                        <option value="2">2 Stops</option>
+                        <option value="3">3+ Stops</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="flight-info" id="flightInfo">
+                <p>Estimated Flight Duration: <span id="estimatedTime">--</span></p>
+            </div>
+            
+            <div class="model-choice">
+                <label style="font-weight: 600; color: #333;">Select Model:</label>
+                <div class="radio-group">
+                    <input type="radio" name="model" value="rfr" id="rfr" checked>
+                    <label for="rfr">Random Forest</label>
+                </div>
+                <div class="radio-group">
+                    <input type="radio" name="model" value="dtr" id="dtr">
+                    <label for="dtr">Decision Tree</label>
+                </div>
+            </div>
+            
+            <div class="btn-container">
+                <button type="submit" class="btn-primary">Predict Price</button>
+                <button type="reset" class="btn-secondary">Reset Form</button>
+            </div>
+        </form>
+    </div>
+    
+    <script>
+        const sourceSelect = document.getElementById('source');
+        const destinationSelect = document.getElementById('destination');
+        const flightInfo = document.getElementById('flightInfo');
+        const estimatedTimeSpan = document.getElementById('estimatedTime');
+        
+        function updateFlightTime() {
+            const source = sourceSelect.value;
+            const destination = destinationSelect.value;
+            
+            if (source && destination) {
+                fetch('/get_flight_time', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        source: source,
+                        destination: destination
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    estimatedTimeSpan.textContent = data.formatted_time;
+                    flightInfo.classList.add('show');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            } else {
+                flightInfo.classList.remove('show');
+            }
+        }
+        
+        sourceSelect.addEventListener('change', updateFlightTime);
+        destinationSelect.addEventListener('change', updateFlightTime);
+        
+        // Reset flight info when form is reset
+        document.getElementById('predictionForm').addEventListener('reset', function() {
+            flightInfo.classList.remove('show');
+        });
+    </script>
+</body>
+</html>

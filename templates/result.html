@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Result</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('/static/wallpaperflare.com_wallpaper.jpg') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            max-width: 600px;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+        }
+        
+        .price-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .price-label {
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+        
+        .price-value {
+            font-size: 3em;
+            font-weight: bold;
+        }
+        
+        .model-info {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+        
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .detail-item {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .detail-label {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .btn-back {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1.1em;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Price Prediction</h1>
+        
+        <div class="price-card">
+            <div class="price-label">Predicted Flight Price</div>
+            <div class="price-value">${{ prediction }}</div>
+        </div>
+        
+        <p class="model-info">Predicted using {{ model }}</p>
+        
+        <div class="details-grid">
+            <div class="detail-item">
+                <div class="detail-label">Airline</div>
+                <div class="detail-value">{{ airline }}</div>
+            </div>
+            
+            <div class="detail-item">
+                <div class="detail-label">Journey Date</div>
+                <div class="detail-value">{{ journey_day }}/{{ journey_month }}/2019</div>
+            </div>
+            
+            <div class="detail-item">
+                <div class="detail-label">From</div>
+                <div class="detail-value">{{ source }}</div>
+            </div>
+            
+            <div class="detail-item">
+                <div class="detail-label">To</div>
+                <div class="detail-value">{{ destination }}</div>
+            </div>
+            
+            <div class="detail-item">
+                <div class="detail-label">Departure</div>
+                <div class="detail-value">{{ departure_time }}</div>
+            </div>
+            
+            <div class="detail-item">
+                <div class="detail-label">Arrival</div>
+                <div class="detail-value">{{ arrival_time }}</div>
+            </div>
+            
+            <div class="detail-item">
+                <div class="detail-label">Stops</div>
+                <div class="detail-value">
+                    {% if stops == 0 %}
+                        Non-stop
+                    {% elif stops == 1 %}
+                        1 Stop
+                    {% else %}
+                        {{ stops }} Stops
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <a href="/" class="btn-back">Make Another Prediction</a>
+    </div>
+</body>
+</html>
