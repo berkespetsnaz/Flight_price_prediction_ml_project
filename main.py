@@ -6,10 +6,10 @@ import numpy as np
 app = Flask(__name__)
 
 # Load the saved models
-with open('dtr.pkl', 'rb') as file:
+with open('tuned_dtr.pkl', 'rb') as file:
     dtr_model = pickle.load(file)
 
-with open('rfr.pkl', 'rb') as file:
+with open('tuned_rfr.pkl', 'rb') as file:
     rfr_model = pickle.load(file)
 
 
