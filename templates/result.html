@@ -110,14 +110,24 @@
 </head>
 <body>
     <div class="container">
-        <h1>Price Prediction</h1>
+        <h1>Price Predictions</h1>
         
-        <div class="price-card">
-            <div class="price-label">Predicted Flight Price</div>
-            <div class="price-value">${{ prediction }}</div>
+        <div class="price-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+            <div class="price-label">Average Prediction</div>
+            <div class="price-value">${{ avg_prediction }}</div>
         </div>
         
-        <p class="model-info">Predicted using {{ model }}</p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px;">
+            <div class="price-card" style="padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div class="price-label" style="font-size: 0.9em;">Random Forest</div>
+                <div class="price-value" style="font-size: 2em;">${{ rf_prediction }}</div>
+            </div>
+            
+            <div class="price-card" style="padding: 20px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <div class="price-label" style="font-size: 0.9em;">Decision Tree</div>
+                <div class="price-value" style="font-size: 2em;">${{ dt_prediction }}</div>
+            </div>
+        </div>
         
         <div class="details-grid">
             <div class="detail-item">

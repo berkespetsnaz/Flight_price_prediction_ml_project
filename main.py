@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session
 import pickle
 import pandas as pd
 import numpy as np
 
 app = Flask(__name__)
+app.secret_key = 'your-secret-key-here-change-this-in-production'
 
 # Load the saved models
 with open('tuned_dtr.pkl', 'rb') as file:
@@ -68,10 +69,13 @@ flight_times = {
 
 @app.route('/')
 def index():
+    # Get last form data from session if available
+    last_data = session.get('last_prediction', {})
     return render_template('index.html', 
                          airlines=list(airline_dict.keys()),
                          sources=source_cities,
-                         destinations=list(destination_dict.keys()))
+                         destinations=list(destination_dict.keys()),
+                         last_data=last_data)
 
 @app.route('/get_flight_time', methods=['POST'])
 def get_flight_time():
@@ -103,7 +107,20 @@ def predict():
         arrival_hour = int(request.form['arrival_hour'])
         arrival_min = int(request.form['arrival_min'])
         total_stops = int(request.form['total_stops'])
-        model_choice = request.form.get('model', 'rfr')
+        
+        # Store form data in session for later use
+        session['last_prediction'] = {
+            'airline': airline,
+            'source': source,
+            'destination': destination,
+            'journey_day': journey_day,
+            'journey_month': journey_month,
+            'departure_hour': departure_hour,
+            'departure_min': departure_min,
+            'arrival_hour': arrival_hour,
+            'arrival_min': arrival_min,
+            'total_stops': total_stops
+        }
         
         # Calculate total minutes
         total_min = (arrival_hour - departure_hour) * 60 + (arrival_min - departure_min)
@@ -134,17 +151,17 @@ def predict():
             'Source_Mumbai': [source_encoded['Mumbai']]
         })
         
-        # Make prediction
-        if model_choice == 'dtr':
-            prediction = dtr_model.predict(input_data)[0]
-            model_name = "Decision Tree Regressor"
-        else:
-            prediction = rfr_model.predict(input_data)[0]
-            model_name = "Random Forest Regressor"
+        # Make predictions with both models
+        rf_prediction = rfr_model.predict(input_data)[0]
+        dt_prediction = dtr_model.predict(input_data)[0]
+        
+        # Calculate average prediction
+        avg_prediction = (rf_prediction + dt_prediction) / 2
         
         return render_template('result.html',
-                             prediction=round(prediction, 2),
-                             model=model_name,
+                             rf_prediction=round(rf_prediction, 2),
+                             dt_prediction=round(dt_prediction, 2),
+                             avg_prediction=round(avg_prediction, 2),
                              airline=airline,
                              source=source,
                              destination=destination,
