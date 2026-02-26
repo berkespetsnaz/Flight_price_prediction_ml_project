@@ -4,7 +4,6 @@ import pandas as pd
 import numpy as np
 
 app = Flask(__name__)
-app.secret_key = 'your-secret-key-here-change-this-in-production'
 
 # Load the saved models
 with open('tuned_dtr.pkl', 'rb') as file:
